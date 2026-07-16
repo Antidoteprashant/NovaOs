@@ -1,0 +1,9 @@
+# Owned by Person 3 \u2014 verify each package exists in bookworm before adding.
+# Keep this list to 3-4 high-value tools for the MVP (see docs/PRD_TRD.md).
+
+flex
+bison
+python3-numpy
+python3-pandas
+jupyter
+wireshark

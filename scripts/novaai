@@ -1,0 +1,13 @@
+#!/bin/bash
+# NovaAI \u2014 offline AI assistant terminal command
+# Owned by Person 3.
+#
+# Install: sudo cp scripts/novaai /usr/local/bin/novaai && sudo chmod +x /usr/local/bin/novaai
+# Usage:   novaai "your question here"
+
+if [ -z "$1" ]; then
+  echo "Usage: novaai \"your question\""
+  exit 1
+fi
+
+ollama run tinyllama "$*"

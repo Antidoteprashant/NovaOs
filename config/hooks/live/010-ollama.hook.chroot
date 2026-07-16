@@ -1,0 +1,19 @@
+#!/bin/bash
+# Owned by Person 3.
+# Runs inside the chroot during 'lb build' to bake Ollama + TinyLlama
+# into the image so it's present at first boot, offline.
+#
+# Numeric prefix (010-) controls run order relative to other hooks in
+# this folder \u2014 lower numbers run first. Keep this early since other
+# hooks may depend on system packages already being present.
+
+set -e
+
+curl -fsSL https://ollama.com/install.sh | sh
+
+# Pull the 2GB-tier model at build time so it's baked into the ISO,
+# not downloaded on first boot (we're offline-first).
+ollama serve &
+sleep 5
+ollama pull tinyllama
+kill %1 || true

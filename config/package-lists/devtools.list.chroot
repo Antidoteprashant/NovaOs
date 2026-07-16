@@ -1,0 +1,7 @@
+python3
+python3-pip
+default-jdk
+git
+gcc
+g++
+make
