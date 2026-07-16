@@ -1,2 +1,5 @@
 lxqt
-sddm
+lightdm
+lightdm-gtk-greeter
+calamares
+calamares-settings-debian

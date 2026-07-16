@@ -1,0 +1,71 @@
+# NovaOS — Calamares Branding
+# Drop into /etc/calamares/branding/novaos/branding.desc
+#
+# This is a QSettings INI file. The keys on the right of the = are read
+# by Calamares' Branding class. Don't change the section names — they
+# map directly to code.
+
+[calamares-sidebar]
+# Sidebar image shown on the left during the install wizard
+image=sidebar.png
+
+# A subtle sidebar background tint that shows behind the image
+background=background.png
+
+# No title text on the sidebar — the wizard step header is enough
+# (we removed it because "Step 1/7" etc. is visually noisy)
+
+[calamares]
+# Product name shown in titles and the success page
+productName=NovaOS
+# Short tagline shown under the product name
+productSubtitle=Custom Linux for CS/IT Students
+# Version — usually inherited from /etc/os-release, but explicit is safer
+version=1.0
+# Short identifier — used for settings path, etc.
+shortVersion=1.0
+# Build version — every time you re-bump the ISO, change this
+buildVersion=2026-07-16
+
+# Whether the sidebar should be shown at all. (Calamares QML mode uses
+# a different layout, but most installers use the QWidgets UI.)
+sidebar=true
+# When false, the welcome page is shown without the sidebar
+sidebarWelcome=auto
+# When true, hides the bulleted list on the welcome page (use a different one)
+bulleted=false
+
+# URLs — these show as "Get support" and "Donate" buttons on the finished page
+# (off by default — we have a college project, no donations)
+supportUrl=
+bugReportingUrl=
+donateUrl=
+knownIssuesUrl=
+forumsUrl=
+releaseNotesUrl=
+
+# Path to the post-install script that re-arms our config. (We use this!)
+# It's the file in /etc/calamares/scripts/ that runs after install.
+postInstallScript=
+
+[locale]
+# Default language for the install UI
+# (user-selectable from a dropdown in the welcome step)
+defaultLocale=en_US.UTF-8
+# Available languages — comma-separated
+availableLocales=en_US.UTF-8,en_GB.UTF-8,es_ES.UTF-8,fr_FR.UTF-8,de_DE.UTF-8,hi_IN.UTF-8,zh_CN.UTF-8,ja_JP.UTF-8,pt_BR.UTF-8,ar_SA.UTF-8
+
+[updates]
+# Where the OS checks for update notifications. We don't have one.
+# Leave empty to skip.
+checkUpdatesUrl=
+
+[ui]
+# The default stylesheet to apply — applies on top of the system Qt theme
+stylesheet=stylesheet.qss
+# Default icon theme
+iconTheme=NovaOS-Icon
+# Sidebar width (px) — we use a wider sidebar (260px) for branding visibility
+sidebarWidth=260
+# Sidebar separator style — none looks cleanest on a dark theme
+sidebarSeparator=none

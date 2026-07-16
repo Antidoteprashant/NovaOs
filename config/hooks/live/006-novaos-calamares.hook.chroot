@@ -1,0 +1,145 @@
+#!/bin/bash
+# ----------------------------------------------------------------------
+# 006-novaos-calamares.hook.chroot
+# ----------------------------------------------------------------------
+# Owned by Person 2.
+# Runs inside the live chroot during 'lb build'.
+# Configures Calamares to use NovaOS branding and registers the
+# post-install hook that applies branding to the TARGET disk.
+#
+# Run order: 006- runs after 005-novaos-branding.hook.chroot
+# which installs branding files first.
+# ----------------------------------------------------------------------
+
+set -e
+
+log() { echo "[novaos-calamares-hook] $*"; }
+
+CALAMARES_CONF="/etc/calamares/settings.conf"
+CALAMARES_BRANDING_DIR="/etc/calamares/branding/novaos"
+POSTINSTALL_SCRIPT="/etc/calamares/scripts/novaos-branding-postinstall.sh"
+NOVAOS_ASSETS="/usr/share/novaos"
+
+# -----------------------------------------------------------------------
+# 0. Check if Calamares is installed
+# -----------------------------------------------------------------------
+if ! command -v calamares >/dev/null 2>&1; then
+    log "WARN: calamares not installed — skipping Calamares config hook."
+    log "      Add 'calamares calamares-settings-debian' to package-lists/desktop.list.chroot"
+    exit 0
+fi
+
+log "Configuring Calamares for NovaOS branding..."
+
+# -----------------------------------------------------------------------
+# 1. Set branding to novaos in settings.conf
+# -----------------------------------------------------------------------
+if [ -f "$CALAMARES_CONF" ]; then
+    if grep -q "^branding:" "$CALAMARES_CONF"; then
+        # Replace existing branding line
+        sed -i "s|^branding:.*|branding: novaos|" "$CALAMARES_CONF"
+        log "  ✓ Updated branding: novaos in $CALAMARES_CONF"
+    else
+        # Add branding line at top of file
+        sed -i "1s|^|branding: novaos\n|" "$CALAMARES_CONF"
+        log "  ✓ Added branding: novaos to $CALAMARES_CONF"
+    fi
+else
+    log "  WARN: $CALAMARES_CONF not found — creating minimal settings.conf"
+    mkdir -p /etc/calamares
+    cat > "$CALAMARES_CONF" << 'EOF'
+# Calamares settings — NovaOS minimal config
+# Full reference: https://github.com/calamares/calamares/blob/calamares/settings.conf
+
+branding: novaos
+
+# Modules that run in the prepare (UI) phase — user makes choices here
+show:
+    - welcome
+    - locale
+    - keyboard
+    - partition
+    - users
+    - summary
+
+# Modules that run during the actual install phase
+exec:
+    - partition
+    - mount
+    - unpackfs
+    - machineid
+    - fstab
+    - locale
+    - keyboard
+    - localecfg
+    - users
+    - displaymanager
+    - networkcfg
+    - hwclock
+    - grubcfg
+    - bootloader
+    - shellprocess
+
+# Modules that run after install to show completion
+show:
+    - finished
+EOF
+    log "  ✓ Created minimal settings.conf"
+fi
+
+# -----------------------------------------------------------------------
+# 2. Register the NovaOS post-install shellprocess script
+# -----------------------------------------------------------------------
+if [ -f "$POSTINSTALL_SCRIPT" ]; then
+    # Check if shellprocess block referencing our script already exists
+    if ! grep -q "novaos-branding-postinstall" "$CALAMARES_CONF"; then
+        # Append the shellprocess entry to the exec: block
+        cat >> "$CALAMARES_CONF" << EOF
+
+# NovaOS branding post-install hook (added by 006-novaos-calamares.hook.chroot)
+# This runs LAST in the exec sequence to apply branding to the installed system.
+#
+# Note: shellprocess module must be in the exec: list above.
+# If using calamares-settings-debian, add this entry manually.
+# See novaos-config/calamares-branding/settings.conf.snippet for details.
+EOF
+        log "  ✓ Post-install hook reference added to settings.conf"
+    else
+        log "  ✓ Post-install hook already registered"
+    fi
+
+    # Create the shellprocess module config if it doesn't exist
+    SHELLPROCESS_CONF="/etc/calamares/modules/shellprocess.conf"
+    mkdir -p /etc/calamares/modules
+    if [ ! -f "$SHELLPROCESS_CONF" ]; then
+        cat > "$SHELLPROCESS_CONF" << 'EOF'
+# shellprocess module config for Calamares
+# Runs the NovaOS branding post-install script after everything else.
+---
+dontChroot: false
+timeout: 300
+
+script:
+    - "-/usr/bin/env"
+    - "bash"
+    - "/etc/calamares/scripts/novaos-branding-postinstall.sh"
+    - "@ROOT@"
+EOF
+        log "  ✓ Created shellprocess.conf"
+    fi
+else
+    log "  WARN: $POSTINSTALL_SCRIPT not found"
+    log "        Run install-branding.sh before this hook, or add novaos .deb to package-lists"
+fi
+
+# -----------------------------------------------------------------------
+# 3. Verify NovaOS branding directory is in place
+# -----------------------------------------------------------------------
+if [ -d "$CALAMARES_BRANDING_DIR" ]; then
+    log "  ✓ Calamares branding dir present: $CALAMARES_BRANDING_DIR"
+else
+    log "  WARN: $CALAMARES_BRANDING_DIR not found"
+    log "        Run install-branding.sh inside chroot before building ISO"
+fi
+
+log "Calamares config complete."
