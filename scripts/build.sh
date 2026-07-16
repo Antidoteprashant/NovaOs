@@ -15,6 +15,9 @@ fi
 echo "== Cleaning previous build =="
 sudo lb clean
 
+echo "== Configuring build =="
+lb config --distribution bookworm --architecture amd64 --debian-installer none --archive-areas "main contrib non-free-firmware"
+
 echo "== Building ISO =="
 sudo lb build 2>&1 | tee build.log
 

@@ -5,3 +5,4 @@ git
 gcc
 g++
 make
+curl
