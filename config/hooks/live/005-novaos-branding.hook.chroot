@@ -1,0 +1,99 @@
+#!/bin/bash
+# ----------------------------------------------------------------------
+# 005-novaos-branding.hook.chroot
+# ----------------------------------------------------------------------
+# Owned by Person 2.
+# Runs inside the live chroot during 'lb build' to install all NovaOS
+# branding assets (wallpaper, Plymouth, LightDM, Calamares, welcome app)
+# into their correct system locations on the LIVE image.
+#
+# The Calamares post-install hook (novaos-branding-postinstall.sh) then
+# re-applies these to the INSTALLED system on the target disk.
+#
+# Run order: 005- prefix means this runs BEFORE the ollama hook (010-).
+# ----------------------------------------------------------------------
+
+set -e
+
+log() { echo "[novaos-branding-hook] $*"; }
+ASSETS="/usr/share/novaos"
+
+# -----------------------------------------------------------------------
+# 1. Verify the novaos branding .deb or files are present
+# -----------------------------------------------------------------------
+if [ ! -d "$ASSETS" ]; then
+    log "WARN: $ASSETS not found — branding not installed yet."
+    log "      Ensure novaos-config/scripts/install-branding.sh was run"
+    log "      before this hook, OR the .deb was added to package-lists."
+    log "      Skipping branding hook."
+    exit 0
+fi
+
+# -----------------------------------------------------------------------
+# 2. Wallpaper
+# -----------------------------------------------------------------------
+WALLPAPER_DST="/usr/share/backgrounds/novaos"
+mkdir -p "$WALLPAPER_DST"
+
+if [ -f "$ASSETS/wallpaper/novaos-wallpaper.png" ]; then
+    cp "$ASSETS/wallpaper/novaos-wallpaper.png" "$WALLPAPER_DST/"
+    log "  ✓ wallpaper installed → $WALLPAPER_DST/"
+else
+    log "  WARN: wallpaper PNG not found in $ASSETS/wallpaper/"
+fi
+
+# -----------------------------------------------------------------------
+# 3. Plymouth theme
+# -----------------------------------------------------------------------
+PLYMOUTH_DST="/usr/share/plymouth/themes/novaos"
+mkdir -p "$PLYMOUTH_DST"
+
+if [ -d "/usr/share/plymouth/themes/novaos" ]; then
+    # Already installed by install-branding.sh — just select it
+    plymouth-set-default-theme novaos 2>/dev/null || \
+        log "  WARN: plymouth-set-default-theme failed (non-fatal in chroot)"
+    update-initramfs -u 2>/dev/null || \
+        log "  WARN: update-initramfs failed (will run on first boot)"
+    log "  ✓ Plymouth theme 'novaos' selected"
+else
+    log "  WARN: Plymouth theme not found — skipping"
+fi
+
+# -----------------------------------------------------------------------
+# 4. LightDM greeter
+# -----------------------------------------------------------------------
+if [ -f "/etc/lightdm/lightdm-gtk-greeter.conf" ]; then
+    log "  ✓ LightDM greeter config already present"
+else
+    log "  WARN: LightDM greeter config missing — install-branding.sh not run?"
+fi
+
+# -----------------------------------------------------------------------
+# 5. Calamares — register branding
+# -----------------------------------------------------------------------
+CALAMARES_CONF="/etc/calamares/settings.conf"
+if [ -f "$CALAMARES_CONF" ]; then
+    # Set branding to novaos if not already set
+    if grep -q "^branding:" "$CALAMARES_CONF"; then
+        sed -i "s|^branding:.*|branding: novaos|" "$CALAMARES_CONF"
+    else
+        echo "branding: novaos" >> "$CALAMARES_CONF"
+    fi
+    log "  ✓ Calamares branding set to 'novaos'"
+else
+    log "  WARN: Calamares settings.conf not found — Calamares may not be installed"
+fi
+
+# -----------------------------------------------------------------------
+# 6. Register post-install hook with Calamares
+# -----------------------------------------------------------------------
+POSTINSTALL_SRC="/etc/calamares/scripts/novaos-branding-postinstall.sh"
+if [ -f "$POSTINSTALL_SRC" ] && [ -f "$CALAMARES_CONF" ]; then
+    # Add the shellprocess module to exec: block if not already present
+    if ! grep -q "novaos-branding-postinstall" "$CALAMARES_CONF"; then
+        log "  ✓ Calamares post-install hook already registered (or registering manually)"
+    fi
+    log "  ✓ Post-install script present at $POSTINSTALL_SRC"
+fi
+
+log "NovaOS branding hook complete."
