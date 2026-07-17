@@ -33,7 +33,7 @@ echo "== Configuring build =="
 lb config \
   --distribution bookworm \
   --architecture amd64 \
-  --debian-installer none \
+  --debian-installer live \
   --archive-areas "main contrib non-free-firmware" \
   --security false \
   --linux-flavours amd64
