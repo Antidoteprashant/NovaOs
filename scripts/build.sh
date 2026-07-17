@@ -35,8 +35,10 @@ fi
 # -----------------------------------------------------------------------
 # Step 2: Configure and run live-build
 # -----------------------------------------------------------------------
-echo "== Cleaning previous build =="
-sudo lb clean
+echo "== Cleaning previous build and caches =="
+sudo lb clean --purge
+sudo rm -rf auto/
+sudo rm -f wget-log*
 
 echo "== Configuring build =="
 lb config \
