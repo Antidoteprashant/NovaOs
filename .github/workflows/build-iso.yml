@@ -16,7 +16,9 @@ jobs:
         run: |
           sudo sed -i '/Contents-\${ARCH}\.gz/,+10 s/^/#SKIPPED# /' /usr/lib/live/build/lb_chroot_linux-image || true
           sudo sed -i 's/^\(.*wget.*Contents.*\)$/#\1/' /usr/lib/live/build/lb_chroot_linux-image || true
-          grep -C 3 "Contents" /usr/lib/live/build/lb_chroot_linux-image || true
+          sudo sed -i '/Contents-\${ARCH}\.gz/,+10 s/^/#SKIPPED# /' /usr/lib/live/build/lb_binary_debian-installer || true
+          sudo sed -i 's/^\(.*wget.*Contents.*\)$/#\1/' /usr/lib/live/build/lb_binary_debian-installer || true
+          grep -C 3 "Contents" /usr/lib/live/build/lb_* || true
       - name: Build ISO
         run: sudo bash scripts/build.sh
       - name: Upload ISO
