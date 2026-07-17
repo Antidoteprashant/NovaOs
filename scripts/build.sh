@@ -35,7 +35,8 @@ lb config \
   --architecture amd64 \
   --debian-installer none \
   --archive-areas "main contrib non-free-firmware" \
-  --security false
+  --security false \
+  --linux-flavours amd64
 
 echo "== Staging NovaOS branding for chroot =="
 mkdir -p config/includes.chroot/opt/
