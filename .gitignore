@@ -25,3 +25,6 @@ Thumbs.db
 *.qcow2
 *.vdi
 *.vmdk
+
+# Download logs
+wget-log*
