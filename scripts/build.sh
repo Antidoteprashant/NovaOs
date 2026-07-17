@@ -43,7 +43,9 @@ lb config \
   --distribution bookworm \
   --architecture amd64 \
   --debian-installer none \
-  --archive-areas "main contrib non-free-firmware"
+  --archive-areas "main contrib non-free-firmware" \
+  --security false \
+  --updates false
 
 echo "== Building ISO =="
 sudo lb build 2>&1 | tee build.log
