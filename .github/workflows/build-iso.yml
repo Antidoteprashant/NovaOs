@@ -1,0 +1,28 @@
+name: Build NovaOS ISO
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install live-build
+        run: sudo apt update && sudo apt install -y live-build live-config live-boot
+      - name: Build ISO
+        run: |
+          sudo lb clean
+          sudo lb build 2>&1 | tee build.log
+      - name: Upload ISO
+        uses: actions/upload-artifact@v4
+        with:
+          name: novaos-iso
+          path: "*.iso"
+      - name: Upload build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: build.log
