@@ -44,8 +44,7 @@ lb config \
   --architecture amd64 \
   --debian-installer none \
   --archive-areas "main contrib non-free-firmware" \
-  --security false \
-  --updates false
+  --security false
 
 echo "== Building ISO =="
 sudo lb build 2>&1 | tee build.log
