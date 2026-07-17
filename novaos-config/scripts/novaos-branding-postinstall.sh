@@ -90,6 +90,9 @@ if [ -d "$NOVAOS_ASSETS/plymouth/novaos" ]; then
     chroot "$TARGET" plymouth-set-default-theme novaos 2>>"$TARGET$LOG" || {
         log "  ⚠ plymouth-set-default-theme failed — continuing"
     }
+    if chroot "$TARGET" command -v update-initramfs >/dev/null 2>&1; then
+        chroot "$TARGET" update-initramfs -u 2>>"$TARGET$LOG" || log "  ⚠ update-initramfs failed — continuing"
+    fi
     log "  ✓ Plymouth theme selected"
 fi
 
@@ -115,7 +118,12 @@ if [ -d "$NOVAOS_ASSETS/grub" ]; then
     if ! grep -q "^GRUB_GFXMODE=" "$TARGET/etc/default/grub"; then
         echo "GRUB_GFXMODE=auto" >> "$TARGET/etc/default/grub"
     fi
-    log "  ✓ GRUB theme configured (run update-grub on first boot)"
+    if chroot "$TARGET" command -v update-grub >/dev/null 2>&1; then
+        chroot "$TARGET" update-grub 2>>"$TARGET$LOG" || log "  ⚠ update-grub failed — continuing"
+        log "  ✓ GRUB menu updated with custom theme"
+    else
+        log "  ✓ GRUB theme configured (run update-grub on first boot)"
+    fi
 fi
 
 # ----------------------------------------------------------------------

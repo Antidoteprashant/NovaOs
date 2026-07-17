@@ -1,0 +1,5 @@
+# Force LF line endings for shell scripts, commands and hooks to prevent syntax/execution issues inside Linux build/target chroots.
+*.sh text eol=lf
+*.hook.chroot text eol=lf
+novaai text eol=lf
+novaos-welcome text eol=lf

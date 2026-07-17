@@ -92,7 +92,9 @@ install)
 
     # 8. Wallpaper + icons
     cp "$NOVAOS_ROOT/de-config/wallpaper/novaos-wallpaper.svg" "$ASSETS_DIR/wallpaper/"
+    cp "$NOVAOS_ROOT/de-config/wallpaper"/novaos-wallpaper*.png "$ASSETS_DIR/wallpaper/" 2>/dev/null || true
     cp "$NOVAOS_ROOT/de-config/icons/novaos-logo.svg" "$ASSETS_DIR/icons/"
+    cp "$NOVAOS_ROOT/de-config/icons"/novaos-logo*.png "$ASSETS_DIR/icons/" 2>/dev/null || true
     log "  ✓ Wallpaper + icons installed"
 
     # 9. Icon theme skeleton

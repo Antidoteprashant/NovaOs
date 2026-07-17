@@ -14,6 +14,12 @@ curl -fsSL https://ollama.com/install.sh | sh
 # Pull the 2GB-tier model at build time so it's baked into the ISO,
 # not downloaded on first boot (we're offline-first).
 ollama serve &
-sleep 5
+# Wait for Ollama service to start responding (up to 30 seconds)
+for i in {1..30}; do
+  if curl -s http://localhost:11434/ >/dev/null; then
+    break
+  fi
+  sleep 1
+done
 ollama pull tinyllama
 kill %1 || true
