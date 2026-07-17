@@ -16,18 +16,27 @@
 set -e
 
 log() { echo "[novaos-branding-hook] $*"; }
-ASSETS="/usr/share/novaos"
+# -----------------------------------------------------------------------
+# 1. Execute the branding install script from within the chroot
+# -----------------------------------------------------------------------
+INSTALL_SCRIPT="/opt/novaos-config/scripts/install-branding.sh"
 
-# -----------------------------------------------------------------------
-# 1. Verify the novaos branding .deb or files are present
-# -----------------------------------------------------------------------
-if [ ! -d "$ASSETS" ]; then
-    log "WARN: $ASSETS not found — branding not installed yet."
-    log "      Ensure novaos-config/scripts/install-branding.sh was run"
-    log "      before this hook, OR the .deb was added to package-lists."
+if [ -f "$INSTALL_SCRIPT" ]; then
+    log "Executing install-branding.sh inside the chroot..."
+    chmod +x "$INSTALL_SCRIPT" 2>/dev/null || true
+    # The script will copy assets from /opt/novaos-config/ into /usr/share/novaos, etc.
+    bash "$INSTALL_SCRIPT"
+    log "  ✓ install-branding.sh completed successfully"
+else
+    log "WARN: $INSTALL_SCRIPT not found or not executable."
+    log "      Ensure novaos-config was staged to config/includes.chroot/opt/novaos-config"
+    log "      before running 'lb build'."
     log "      Skipping branding hook."
     exit 0
 fi
+
+# Set ASSETS to the path where install-branding.sh just placed the files
+ASSETS="/usr/share/novaos"
 
 # -----------------------------------------------------------------------
 # 2. Wallpaper

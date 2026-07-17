@@ -22,18 +22,7 @@ if ! command -v lb >/dev/null 2>&1; then
 fi
 
 # -----------------------------------------------------------------------
-# Step 1: Install NovaOS branding into the chroot tree
-# -----------------------------------------------------------------------
-echo "== Installing NovaOS branding into chroot =="
-if [ -f "$REPO_ROOT/novaos-config/scripts/install-branding.sh" ]; then
-  sudo bash "$REPO_ROOT/novaos-config/scripts/install-branding.sh"
-  echo "   ✓ Branding installed"
-else
-  echo "   WARN: novaos-config/scripts/install-branding.sh not found — skipping branding step"
-fi
-
-# -----------------------------------------------------------------------
-# Step 2: Configure and run live-build
+# Step 1: Configure and run live-build
 # -----------------------------------------------------------------------
 echo "== Cleaning previous build and caches =="
 sudo lb clean --purge
@@ -47,6 +36,11 @@ lb config \
   --debian-installer none \
   --archive-areas "main contrib non-free-firmware" \
   --security false
+
+echo "== Staging NovaOS branding for chroot =="
+mkdir -p config/includes.chroot/opt/
+cp -r "$REPO_ROOT/novaos-config" config/includes.chroot/opt/
+echo "   ✓ Branding assets staged in config/includes.chroot/opt/novaos-config"
 
 echo "== Building ISO =="
 sudo lb build 2>&1 | tee build.log

@@ -12,11 +12,7 @@ jobs:
       - name: Install live-build
         run: sudo apt update && sudo apt install -y live-build live-config live-boot
       - name: Build ISO
-        run: |
-          lb config --distribution bookworm --architecture amd64 \
-            --debian-installer none --archive-areas "main contrib non-free-firmware"
-          sudo lb clean
-          sudo lb build 2>&1 | tee build.log
+        run: sudo bash scripts/build.sh
       - name: Upload ISO
         uses: actions/upload-artifact@v4
         with:
