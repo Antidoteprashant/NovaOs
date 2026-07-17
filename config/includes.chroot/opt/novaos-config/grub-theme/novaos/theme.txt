@@ -1,0 +1,107 @@
+# NovaOS GRUB Theme
+# -----------------
+# Drop the entire novaos/ directory into /boot/grub/themes/novaos/
+# Then in /etc/default/grub set:
+#     GRUB_THEME=/boot/grub/themes/novaos/theme.txt
+#     GRUB_GFXMODE=1920x1080x32  (or 1366x768x32 for low-end)
+# And run: sudo update-grub
+#
+# theme.txt format is grub2's own — INI-like with a "desktop" section
+# that defines background, colors, and a list of components.
+
+# --- Background ---
+desktop-image: "background.png"
+desktop-color: "#0E1620"   # nova-bg-deep (fallback if image missing)
+
+# --- Fonts ---
+# Pre-built .pf2 files — generate with: scripts/build-grub-fonts.sh
+# (or see grub-theme/novaos/fonts/README.txt for manual grub-mkfont commands)
+loadfont "fonts/DejaVuSans-Bold-28.pf2"
+loadfont "fonts/DejaVuSans-16.pf2"
+loadfont "fonts/DejaVuSans-12.pf2"
+loadfont "fonts/DejaVuSans-11.pf2"
+loadfont "fonts/DejaVuSans-10.pf2"
+
+# --- Icons ---
+# Boot entry icons — place 32x32 PNGs in icons/ (see icons/README.txt)
+# GRUB auto-matches by name: icons/linux.png, icons/windows.png, etc.
+
+# --- Color scheme ---
+# These are [normal] / [highlight] colors matching our palette.
+# + = component common to both
++ boot_menu {
+    top = 30%
+    left = 25%
+    width = 50%
+    height = 40%
+    item_font = "DejaVu Sans Regular 16"
+    item_color = "#E6EDF3"        # nova-fg
+    selected_item_color = "#1FB8C1"  # nova-accent
+    item_height = 36
+    item_padding = 12
+    item_spacing = 6
+    icon_height = 32
+    icon_width = 32
+    item_icon_space = 12
+}
+
+# --- Title bar at top ---
++ label {
+    top = 8%
+    left = 25%
+    width = 50%
+    height = 40
+    text = "NovaOS"
+    color = "#1FB8C1"     # nova-accent — title stands out
+    font = "DejaVu Sans Bold 28"
+    align = "center"
+}
+
+# --- Tagline under title ---
++ label {
+    top = 14%
+    left = 25%
+    width = 50%
+    height = 24
+    text = "Custom Linux for CS/IT Students"
+    color = "#8B9BB0"     # nova-fg-muted
+    font = "DejaVu Sans 12"
+    align = "center"
+}
+
+# --- Bottom bar (selected item description) ---
++ label {
+    top = 78%
+    left = 10%
+    width = 80%
+    height = 30
+    text = "@KEYMAP_SHORT@"
+    color = "#5C6B80"     # nova-fg-dim
+    font = "DejaVu Sans 11"
+    align = "center"
+}
+
+# --- Progress bar (during boot, before theme is hidden) ---
++ progress_bar {
+    id = "__timeout__"
+    top = 92%
+    left = 30%
+    width = 40%
+    height = 6
+    fg_color = "#1FB8C1"
+    bg_color = "#2A3A50"
+    border_color = "#1FB8C1"
+    text_color = "#8B9BB0"
+    font = "DejaVu Sans 10"
+}
+
+# --- Circular (or custom) indicator instead of text ---
++ circular_progress {
+    id = "__timeout__"
+    top = 88%
+    left = 92%
+    width = 32
+    height = 32
+    fg_color = "#1FB8C1"
+    bg_color = "#2A3A50"
+}

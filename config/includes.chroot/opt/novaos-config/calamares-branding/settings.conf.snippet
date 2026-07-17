@@ -1,0 +1,24 @@
+# ----------------------------------------------------------------------
+# Add this to /etc/calamares/settings.conf on the live ISO
+# (or include this file via the live-build config hooks)
+# ----------------------------------------------------------------------
+# Minimal changes needed to use the NovaOS branding layer:
+#   1. Set branding to "novaos"
+#   2. Add the post-install script to the script chain
+#   3. Ensure the "exec" sequence runs the post-install LAST
+# ----------------------------------------------------------------------
+
+# In settings.conf:
+#
+#   branding: novaos
+#
+# And in the modules section, append at the END of the "exec" sequence:
+#
+#   - name: shellprocess
+#     required: true
+#     script: /etc/calamares/scripts/novaos-branding-postinstall.sh
+#     timeout: 300
+#
+# Your teammate's existing sequence (e.g. bootloader, network, etc.)
+# stays intact. NovaOS branding is layered on top — it does NOT replace
+# their modules.

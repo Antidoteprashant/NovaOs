@@ -1,0 +1,44 @@
+# NovaOS Design Tokens
+# Single source of truth for the look. Every asset references this.
+#
+# Palette philosophy: dark surfaces, teal/blue accent, high contrast for
+# readability in class and during long coding sessions.
+
+# --- Core palette ---
+nova-bg-deep      = #0E1620   # deepest background (terminal feel)
+nova-bg-surface   = #161E2A   # panels, sidebars
+nova-bg-elevated  = #1E2A3A   # cards, popovers
+nova-border       = #2A3A50
+
+# --- Brand ---
+nova-accent       = #1FB8C1   # primary teal
+nova-accent-hover = #2BD4DE
+nova-accent-soft  = #143036   # tinted backgrounds
+
+# --- Text ---
+nova-fg           = #E6EDF3
+nova-fg-muted     = #8B9BB0
+nova-fg-dim       = #5C6B80
+
+# --- Semantic ---
+nova-success      = #4ADE80
+nova-warning      = #F4B740
+nova-error        = #F87171
+
+# --- Typography ---
+# System fonts only — no font shipping. Saves ~30MB.
+nova-font-ui      = "Inter, Noto Sans, Cantarell, sans-serif"
+nova-font-mono    = "JetBrains Mono, DejaVu Sans Mono, monospace"
+
+# --- Sizing (used in themes) ---
+nova-radius       = 6
+nova-radius-lg    = 12
+nova-shadow       = 0 2px 8px rgba(0,0,0,0.35)
+
+# --- Where each token is used ---
+# plymouth-theme/novaos/novaos.script        → bg-deep, accent
+# grub-theme/novaos/theme.txt                → bg-deep, fg, accent
+# lightdm-theme/gtk-3.0/gtk.css              → all
+# calamares-branding/novaos/...qss           → all
+# welcome-app/welcome.py                     → all
+# de-config/wallpaper/...svg                 → bg-deep, accent gradient
