@@ -11,6 +11,10 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install live-build
         run: sudo apt update && sudo apt install -y live-build live-config live-boot
+      - name: Inspect lb_chroot_linux-image script
+        run: |
+          find / -iname "*chroot_linux-image*" 2>/dev/null
+          cat $(find / -iname "*chroot_linux-image*" 2>/dev/null | head -1)
       - name: Build ISO
         run: sudo bash scripts/build.sh
       - name: Upload ISO
