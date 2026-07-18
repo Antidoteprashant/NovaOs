@@ -18,8 +18,10 @@ jobs:
       - name: Install build dependencies
         run: |
           sudo apt update
+          # debian-archive-keyring: needed so lb can verify Debian repo signatures on Ubuntu runner
           # --reinstall ensures symlink targets are properly extracted
           sudo apt install -y --reinstall \
+            debian-archive-keyring \
             isolinux syslinux-common syslinux-utils \
             live-build live-config live-boot \
             grub-common grub-efi-amd64-bin grub-pc-bin \
@@ -86,12 +88,19 @@ jobs:
       - name: Configure live-build
         run: |
           sudo lb clean --purge || true
+          # Explicitly set Debian mirrors — without this, lb on Ubuntu runner
+          # defaults to archive.ubuntu.com which doesn't have bookworm (Debian release)
           lb config \
             --distribution bookworm \
             --architecture amd64 \
             --archive-areas "main contrib non-free-firmware" \
             --security false \
-            --linux-flavours amd64
+            --linux-flavours amd64 \
+            --mirror-bootstrap http://deb.debian.org/debian/ \
+            --mirror-chroot http://deb.debian.org/debian/ \
+            --mirror-binary http://deb.debian.org/debian/ \
+            --mirror-chroot-security http://security.debian.org/debian-security/ \
+            --mirror-binary-security http://security.debian.org/debian-security/
 
       # -----------------------------------------------------------------------
       # 5. Stage NovaOS branding into the chroot tree
