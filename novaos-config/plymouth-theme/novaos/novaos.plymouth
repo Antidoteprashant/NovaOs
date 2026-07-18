@@ -1,8 +1,0 @@
-[Plymouth Theme]
-Name=NovaOS
-Description=NovaOS boot splash — dark with teal logo and progress bar
-ModuleName=script
-
-[script]
-ImageDir=/usr/share/plymouth/themes/novaos
-ScriptFile=/usr/share/plymouth/themes/novaos/novaos.script
