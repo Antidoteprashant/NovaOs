@@ -1,29 +1,20 @@
-# NovaOS — Desktop & Installer packages
-# =====================================
-# Add this file to your live-build config:
-#   config/package-lists/novaos-desktop.list.chroot
-#
-# This is the SINGLE seam between the base OS build (teammate's work)
-# and the Desktop Experience layer (your work).
-#
-# Categories: DE, theming, installer, branding runtime.
-# Version pinning: avoid strict "="; use stable codenames or nothing.
+# NovaOS — Desktop & Installer packages (Person 2 owns this file)
+# All lines here must be a bare package name, a blank line, or a line
+# starting with '#'. NO inline comments — live-build passes the full
+# line to apt-get, so "pkg # comment" would break the install pass.
 
 # --- Desktop Environment (LXQt) ---
 lxqt
 lxqt-session
 lxqt-panel
 lxqt-config
-lxqt-globalkeyshcuts
 lxqt-qtplugin
 lxqt-sudo
 lxqt-themes
 lxqt-policykit
 lxqt-powermanagement
-lxqt-notificationd
 pcmanfm-qt
 qterminal
-qtermwidget
 obconf-qt
 openbox
 lightdm
@@ -31,14 +22,9 @@ lightdm-gtk-greeter
 
 # --- Theming / Fonts ---
 qt5ct
-adwaita-qt
-adwaita-qt5
 fonts-noto-core
-fonts-noto-cjk
 fonts-dejavu-core
-fonts-inter                   # NovaOS font; auto-fallback if missing
-fonts-jetbrains-mono          # for code editor / welcome app
-papirus-icon-theme            # base icons (NovaOS-Icon inherits from it)
+papirus-icon-theme
 adwaita-icon-theme
 
 # --- Display / Login ---
@@ -56,37 +42,7 @@ libplymouth5
 calamares
 calamares-settings-debian
 
-# --- Welcome app dependencies ---
-python3
+# --- Welcome app runtime ---
 python3-pyqt5
 python3-pyqt5.qtsvg
 xdg-utils
-
-# --- Useful student tools (optional — comment out if you want them smaller) ---
-git
-git-gui
-curl
-wget
-vim
-neovim
-build-essential
-gcc
-gdb
-make
-cmake
-python3-venv
-python3-pip
-# code                        # Requires MS repo; commented out to prevent build failure
-
-
-# --- Optional but recommended: lightweight office & docs ---
-zeal                          # offline dev docs
-libreoffice-core              # keep it small; full LO is ~400MB
-libreoffice-writer
-libreoffice-calc
-
-# --- Removed (avoid bloat on 2GB machines) ---
-# - libreoffice-impress  (use impress only if requested)
-# - chromium / firefox-esr  (teammate's choice — pick ONE)
-# - gimp                   (use Pinta for a smaller alternative)
-# - steam, vscode-server   (college project — out of scope)
