@@ -22,23 +22,28 @@ jobs:
       - name: Force-stage isolinux files where live-build expects them
         run: |
           sudo mkdir -p /root/isolinux
-          ISOLINUX_BIN=$(find / -iname "isolinux.bin" 2>/dev/null | head -1)
-          VESAMENU=$(find / -iname "vesamenu.c32" 2>/dev/null | head -1)
+          LB_ISOLINUX_DIR=/usr/share/live/build/bootloaders/isolinux
+          sudo mkdir -p "$LB_ISOLINUX_DIR"
+          ISOLINUX_BIN=$(find /usr/lib /usr/share -type f -iname "isolinux.bin" 2>/dev/null | head -1)
+          VESAMENU=$(find /usr/lib /usr/share -type f -iname "vesamenu.c32" 2>/dev/null | head -1)
           echo "Found isolinux.bin at: $ISOLINUX_BIN"
           echo "Found vesamenu.c32 at: $VESAMENU"
           if [ -n "$ISOLINUX_BIN" ]; then
             sudo cp "$ISOLINUX_BIN" /root/isolinux/isolinux.bin
+            sudo cp "$ISOLINUX_BIN" "$LB_ISOLINUX_DIR/isolinux.bin"
           else
             echo "ERROR: isolinux.bin not found anywhere on this system"
             exit 1
           fi
           if [ -n "$VESAMENU" ]; then
             sudo cp "$VESAMENU" /root/isolinux/vesamenu.c32
+            sudo cp "$VESAMENU" "$LB_ISOLINUX_DIR/vesamenu.c32"
           else
             echo "ERROR: vesamenu.c32 not found anywhere on this system"
             exit 1
           fi
           ls -la /root/isolinux/
+          ls -la "$LB_ISOLINUX_DIR/"
       - name: Build ISO
         run: sudo bash scripts/build.sh
       - name: Upload ISO
