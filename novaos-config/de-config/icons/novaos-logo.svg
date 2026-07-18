@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  NovaOS Logo (256x256)
+  A stylized "N" formed by 4 expanding rays in nova-accent,
+  with a bright teal "core" star in the bottom-right.
+  Works on dark backgrounds (most of our UI).
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="rayGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%"  stop-color="#2BD4DE"/>
+      <stop offset="100%" stop-color="#178A91"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Four rays forming an "N" — top-left and bottom-right pairs -->
+  <g transform="translate(48 48)">
+    <!-- vertical left bar -->
+    <rect x="0"  y="0"  width="22" height="160" rx="4" fill="url(#rayGrad)"/>
+    <!-- vertical right bar -->
+    <rect x="138" y="0" width="22" height="160" rx="4" fill="url(#rayGrad)"/>
+    <!-- diagonal connecting them -->
+    <polygon points="22,32  22,80  138,128  138,80" fill="url(#rayGrad)"/>
+  </g>
+
+  <!-- Core star (the "nova") -->
+  <g transform="translate(196 196)">
+    <circle r="20" fill="#1FB8C1"/>
+    <circle r="10" fill="#FFFFFF" opacity="0.9"/>
+  </g>
+</svg>

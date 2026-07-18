@@ -1,0 +1,44 @@
+# ----------------------------------------------------------------------
+# NovaOS Calamares integration — 3 files needed, not just settings.conf
+# ----------------------------------------------------------------------
+# IMPORTANT (verified against real Calamares docs): settings.conf's
+# "sequence" list only takes module NAMES as plain strings. You canNOT
+# put "script:" or "timeout:" keys directly inside the sequence list —
+# those belong in a separate module config file. Do it like this:
+# ----------------------------------------------------------------------
+
+# 1) In /etc/calamares/settings.conf — add "novaos" as the branding,
+#    and register a NAMED INSTANCE of shellprocess (so it doesn't clash
+#    with any other shellprocess instance your teammate's base config uses):
+#
+#   branding: novaos
+#
+#   instances:
+#   - id:      novaosbranding
+#     module:  shellprocess
+#     config:  shellprocess-novaosbranding.conf
+#
+#   sequence:
+#   - exec:
+#     - partition
+#     - mount
+#     - unpackfs
+#     - ...                       (your teammate's existing exec modules)
+#     - shellprocess@novaosbranding   # <-- add this LAST in exec, as a plain string
+#     - umount
+
+# 2) Create /etc/calamares/modules/shellprocess-novaosbranding.conf:
+#
+#   ---
+#   script: "/etc/calamares/scripts/novaos-branding-postinstall.sh"
+#   timeout: 300
+#   verbose: true
+
+# 3) The actual post-install script already exists at:
+#      scripts/novaos-branding-postinstall.sh
+#    install-branding.sh copies it into place automatically.
+#
+# Your teammate's existing modules (bootloader, network, etc.) stay
+# intact — NovaOS branding is layered on top, added as one extra line
+# in their existing exec sequence plus one small extra config file.
+# ----------------------------------------------------------------------

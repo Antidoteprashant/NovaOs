@@ -1,0 +1,48 @@
+# NovaOS — Calamares Branding Descriptor
+# ----------------------------------------------------------------------
+# Drop into /etc/calamares/branding/novaos/branding.desc
+#
+# IMPORTANT: this is a YAML file, NOT an INI file. Calamares parses
+# branding.desc with its YAML loader (see Calamares::Branding in
+# libcalamaresui). Indentation matters — use spaces, not tabs.
+# Reference: github.com/calamares/calamares/src/branding/default/branding.desc
+# ----------------------------------------------------------------------
+
+componentName: novaos
+
+# When false, uses the classic "Welcome to the %1 installer." wording.
+welcomeStyleCalamares: false
+
+strings:
+    productName:         NovaOS
+    shortProductName:    NovaOS
+    version:             "1.0"
+    shortVersion:        "1.0"
+    versionedName:       "NovaOS 1.0"
+    shortVersionedName:  "NovaOS 1.0"
+    bootloaderEntryName: NovaOS
+
+images:
+    productLogo:    "logo.png"
+    productIcon:    "logo.png"
+    productWelcome: "background.png"
+
+# Slideshow step illustrations are shown via the sidebar/step images below;
+# we are NOT using a QML slideshow (that's a separate, more complex feature).
+# If you add one later, this is where it's wired in:
+# slideshow: "show.qml"
+
+# Dark-mode colors — read by the QWidgets UI (sidebar) and available to
+# any QML slideshow via the Branding object.
+style:
+    sidebarBackground:    "#161E2A"
+    sidebarText:          "#E6EDF3"
+    sidebarTextSelect:    "#1FB8C1"
+    sidebarTextHighlight: "#1E2A3A"
+
+# ----------------------------------------------------------------------
+# NOTE: stylesheet.qss (in this same directory) is picked up automatically
+# by Calamares if present — no key here is needed to enable it.
+# NOTE: to actually enable this branding component, settings.conf must
+# have "branding: novaos" — see calamares-branding/settings.conf.snippet
+# ----------------------------------------------------------------------
