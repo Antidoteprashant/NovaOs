@@ -88,9 +88,12 @@ jobs:
       - name: Configure live-build
         run: |
           sudo lb clean --purge || true
-          # Explicitly set Debian mirrors — without this, lb on Ubuntu runner
-          # defaults to archive.ubuntu.com which doesn't have bookworm (Debian release)
+          # --mode debian: prevents live-build from injecting ubuntu-keyring
+          # into the Debian chroot when running on an Ubuntu CI runner.
+          # Without this, lb detects Ubuntu host and tries to install
+          # 'ubuntu-keyring' inside the chroot — which doesn't exist in Debian.
           lb config \
+            --mode debian \
             --distribution bookworm \
             --architecture amd64 \
             --archive-areas "main contrib non-free-firmware" \
