@@ -110,9 +110,10 @@ jobs:
       # -----------------------------------------------------------------------
       - name: Stage NovaOS branding assets
         run: |
-          mkdir -p config/includes.chroot/opt/
-          cp -r novaos-config config/includes.chroot/opt/novaos-config
+          mkdir -p "$GITHUB_WORKSPACE/config/includes.chroot/opt/"
+          cp -r "$GITHUB_WORKSPACE/novaos-config" "$GITHUB_WORKSPACE/config/includes.chroot/opt/novaos-config"
           echo "✓ Branding assets staged → config/includes.chroot/opt/novaos-config"
+          ls -la "$GITHUB_WORKSPACE/config/includes.chroot/opt/"
 
       # -----------------------------------------------------------------------
       # 6. Build the ISO
