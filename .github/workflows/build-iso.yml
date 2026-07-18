@@ -19,16 +19,26 @@ jobs:
           sudo sed -i '/Contents-\${ARCH}\.gz/,+10 s/^/#SKIPPED# /' /usr/lib/live/build/lb_binary_debian-installer || true
           sudo sed -i 's/^\(.*wget.*Contents.*\)$/#\1/' /usr/lib/live/build/lb_binary_debian-installer || true
           grep -C 3 "Contents" /usr/lib/live/build/lb_* || true
-      - name: Inspect lb_binary_syslinux and isolinux package contents
+      - name: Force-stage isolinux files where live-build expects them
         run: |
-          echo "=== lb_binary_syslinux script ==="
-          cat /usr/lib/live/build/lb_binary_syslinux
-          echo "=== isolinux package file locations ==="
-          dpkg -L isolinux
-          echo "=== does /root/isolinux exist? ==="
-          ls -la /root/isolinux 2>&1 || echo "does not exist"
-          echo "=== find isolinux.bin anywhere on host ==="
-          find / -iname "isolinux.bin" 2>/dev/null
+          sudo mkdir -p /root/isolinux
+          ISOLINUX_BIN=$(find / -iname "isolinux.bin" 2>/dev/null | head -1)
+          VESAMENU=$(find / -iname "vesamenu.c32" 2>/dev/null | head -1)
+          echo "Found isolinux.bin at: $ISOLINUX_BIN"
+          echo "Found vesamenu.c32 at: $VESAMENU"
+          if [ -n "$ISOLINUX_BIN" ]; then
+            sudo cp "$ISOLINUX_BIN" /root/isolinux/isolinux.bin
+          else
+            echo "ERROR: isolinux.bin not found anywhere on this system"
+            exit 1
+          fi
+          if [ -n "$VESAMENU" ]; then
+            sudo cp "$VESAMENU" /root/isolinux/vesamenu.c32
+          else
+            echo "ERROR: vesamenu.c32 not found anywhere on this system"
+            exit 1
+          fi
+          ls -la /root/isolinux/
       - name: Build ISO
         run: sudo bash scripts/build.sh
       - name: Upload ISO
