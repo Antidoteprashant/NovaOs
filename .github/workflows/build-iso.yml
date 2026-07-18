@@ -68,7 +68,7 @@ jobs:
           fi
 
           echo "=== Staged files ==="
-          ls -la /root/isolinux/
+          sudo ls -la /root/isolinux/
 
       # -----------------------------------------------------------------------
       # 3. Patch live-build to skip broken Contents.gz auto-detection
