@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install live-build
-        run: sudo apt update && sudo apt install -y live-build live-config live-boot
+        run: sudo apt update && sudo apt install -y live-build live-config live-boot isolinux syslinux-utils
       - name: Patch live-build to skip broken Contents.gz auto-detection
         run: |
           sudo sed -i '/Contents-\${ARCH}\.gz/,+10 s/^/#SKIPPED# /' /usr/lib/live/build/lb_chroot_linux-image || true
