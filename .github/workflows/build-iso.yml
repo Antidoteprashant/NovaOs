@@ -18,8 +18,8 @@ jobs:
       - name: Install build dependencies
         run: |
           sudo apt update
-          # debian-archive-keyring: needed so lb can verify Debian repo signatures on Ubuntu runner
-          # --reinstall ensures symlink targets are properly extracted
+          # debian-archive-keyring: needed so lb can verify Debian repo GPG on Ubuntu runner
+          # --reinstall ensures symlink targets are properly extracted (not dangling)
           sudo apt install -y --reinstall \
             debian-archive-keyring \
             isolinux syslinux-common syslinux-utils \
@@ -29,48 +29,46 @@ jobs:
             xorriso squashfs-tools
 
       # -----------------------------------------------------------------------
-      # 2. Fix dangling symlinks: find REAL isolinux files (-type f)
-      #    and stage them where live-build expects them.
-      #    Root cause of previous failure: find without -type f returned a
-      #    dangling symlink, which printed "Found" but cp failed because the
-      #    symlink target didn't exist on disk.
+      # 2. Fix dangling isolinux symlinks
+      #    live-build's bootloaders dir has broken symlinks on Ubuntu runners.
+      #    We find the REAL files (-type f skips dangling symlinks) and copy
+      #    them directly into live-build's bootloaders directory so
+      #    lb_binary_syslinux finds them where it actually looks.
       # -----------------------------------------------------------------------
-      - name: Stage isolinux files (broken-symlink-safe)
+      - name: Fix isolinux symlinks in live-build bootloaders dir
         run: |
-          sudo mkdir -p /root/isolinux
+          BOOTLOADERS_DIR="/usr/share/live/build/bootloaders/isolinux"
+          sudo mkdir -p "$BOOTLOADERS_DIR"
 
-          echo "=== Symlink diagnosis ==="
-          ls -la /usr/share/live/build/bootloaders/isolinux/ 2>/dev/null || echo "(bootloaders dir not found)"
-          ls -la /usr/lib/ISOLINUX/ 2>/dev/null          || echo "(ISOLINUX lib dir not found)"
-          ls -la /usr/lib/syslinux/modules/bios/ 2>/dev/null || echo "(syslinux modules dir not found)"
+          echo "=== Before fix ==="
+          ls -la "$BOOTLOADERS_DIR/" 2>/dev/null || echo "(empty)"
 
-          # -type f = only real regular files; broken symlinks are silently skipped
+          # -type f = only real regular files, skips dangling symlinks
           ISOLINUX_BIN=$(find / -iname "isolinux.bin" -type f 2>/dev/null | head -1)
           VESAMENU=$(find /    -iname "vesamenu.c32"  -type f 2>/dev/null | head -1)
 
-          echo "isolinux.bin (real file): ${ISOLINUX_BIN:-NOT FOUND}"
-          echo "vesamenu.c32 (real file): ${VESAMENU:-NOT FOUND}"
+          echo "isolinux.bin (real): ${ISOLINUX_BIN:-NOT FOUND}"
+          echo "vesamenu.c32 (real): ${VESAMENU:-NOT FOUND}"
 
-          if [ -n "$ISOLINUX_BIN" ]; then
-            sudo cp "$ISOLINUX_BIN" /root/isolinux/isolinux.bin
-            echo "✓ isolinux.bin staged"
-          else
-            echo "ERROR: No real isolinux.bin found. All entries (incl. symlinks):"
-            find / -iname "isolinux.bin" 2>/dev/null || true
+          if [ -z "$ISOLINUX_BIN" ]; then
+            echo "ERROR: No real isolinux.bin found"
+            exit 1
+          fi
+          if [ -z "$VESAMENU" ]; then
+            echo "ERROR: No real vesamenu.c32 found"
             exit 1
           fi
 
-          if [ -n "$VESAMENU" ]; then
-            sudo cp "$VESAMENU" /root/isolinux/vesamenu.c32
-            echo "✓ vesamenu.c32 staged"
-          else
-            echo "ERROR: No real vesamenu.c32 found. All entries (incl. symlinks):"
-            find / -iname "vesamenu.c32" 2>/dev/null || true
-            exit 1
-          fi
+          # Replace broken symlinks with real files in the bootloaders dir
+          sudo cp -f "$ISOLINUX_BIN" "$BOOTLOADERS_DIR/isolinux.bin"
+          sudo cp -f "$VESAMENU"     "$BOOTLOADERS_DIR/vesamenu.c32"
 
-          echo "=== Staged files ==="
-          sudo ls -la /root/isolinux/
+          # Also copy all other .c32 modules live-build may need
+          find /usr/lib/syslinux/modules/bios/ -name "*.c32" -type f 2>/dev/null | \
+            while read f; do sudo cp -f "$f" "$BOOTLOADERS_DIR/"; done || true
+
+          echo "=== After fix ==="
+          ls -la "$BOOTLOADERS_DIR/"
 
       # -----------------------------------------------------------------------
       # 3. Patch live-build to skip broken Contents.gz auto-detection
@@ -83,15 +81,13 @@ jobs:
           sudo sed -i 's/^\(.*wget.*Contents.*\)$/#\1/'             /usr/lib/live/build/lb_binary_debian-installer  || true
 
       # -----------------------------------------------------------------------
-      # 4. Configure live-build (replaces scripts/build.sh)
+      # 4. Configure live-build
       # -----------------------------------------------------------------------
       - name: Configure live-build
         run: |
           sudo lb clean --purge || true
-          # --mode debian: prevents live-build from injecting ubuntu-keyring
-          # into the Debian chroot when running on an Ubuntu CI runner.
-          # Without this, lb detects Ubuntu host and tries to install
-          # 'ubuntu-keyring' inside the chroot — which doesn't exist in Debian.
+          # --mode debian: prevents lb from injecting ubuntu-keyring into
+          # the Debian chroot when running on an Ubuntu CI runner.
           lb config \
             --mode debian \
             --distribution bookworm \
@@ -106,31 +102,38 @@ jobs:
             --mirror-binary-security http://security.debian.org/debian-security/
 
       # -----------------------------------------------------------------------
-      # 5. Stage NovaOS branding into the chroot tree
+      # 5. Verify branding assets (already at correct path in git)
       # -----------------------------------------------------------------------
-      - name: Verify NovaOS branding assets are in place
+      - name: Verify NovaOS branding assets
         run: |
-          # Branding files are already committed at the correct path:
-          # config/includes.chroot/opt/novaos-config/
-          # No copy needed — live-build reads them directly from there.
-          echo "=== Branding assets check ==="
-          ls -la "$GITHUB_WORKSPACE/config/includes.chroot/opt/novaos-config/" | head -20
-          echo "✓ Branding assets present at config/includes.chroot/opt/novaos-config/"
+          # Files committed at config/includes.chroot/opt/novaos-config/
+          # live-build reads them directly — no copy needed
+          ls -la "$GITHUB_WORKSPACE/config/includes.chroot/opt/novaos-config/" | head -10
+          echo "✓ Branding assets present"
 
       # -----------------------------------------------------------------------
       # 6. Build the ISO
       # -----------------------------------------------------------------------
       - name: Build ISO
-        run: sudo lb build 2>&1 | tee build.log
+        run: |
+          sudo lb build 2>&1 | tee build.log
+          echo "=== Build exit code: $? ==="
+          echo "=== ISO search ==="
+          find "$GITHUB_WORKSPACE" -maxdepth 2 \( -name "*.iso" -o -name "*.img" \) 2>/dev/null || true
+          ls -lh "$GITHUB_WORKSPACE"/*.iso 2>/dev/null || echo "No .iso in workspace root"
 
       # -----------------------------------------------------------------------
       # 7. Upload artifacts
       # -----------------------------------------------------------------------
       - name: Upload ISO
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: novaos-iso
-          path: "*.iso"
+          path: |
+            *.iso
+            live-image-*.hybrid.iso
+          if-no-files-found: warn
 
       - name: Upload build log
         if: always()
@@ -138,3 +141,4 @@ jobs:
         with:
           name: build-log
           path: build.log
+          if-no-files-found: warn
