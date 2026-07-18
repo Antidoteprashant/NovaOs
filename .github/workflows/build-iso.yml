@@ -19,6 +19,16 @@ jobs:
           sudo sed -i '/Contents-\${ARCH}\.gz/,+10 s/^/#SKIPPED# /' /usr/lib/live/build/lb_binary_debian-installer || true
           sudo sed -i 's/^\(.*wget.*Contents.*\)$/#\1/' /usr/lib/live/build/lb_binary_debian-installer || true
           grep -C 3 "Contents" /usr/lib/live/build/lb_* || true
+      - name: Inspect lb_binary_syslinux and isolinux package contents
+        run: |
+          echo "=== lb_binary_syslinux script ==="
+          cat /usr/lib/live/build/lb_binary_syslinux
+          echo "=== isolinux package file locations ==="
+          dpkg -L isolinux
+          echo "=== does /root/isolinux exist? ==="
+          ls -la /root/isolinux 2>&1 || echo "does not exist"
+          echo "=== find isolinux.bin anywhere on host ==="
+          find / -iname "isolinux.bin" 2>/dev/null
       - name: Build ISO
         run: sudo bash scripts/build.sh
       - name: Upload ISO
