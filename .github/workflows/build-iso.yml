@@ -108,12 +108,14 @@ jobs:
       # -----------------------------------------------------------------------
       # 5. Stage NovaOS branding into the chroot tree
       # -----------------------------------------------------------------------
-      - name: Stage NovaOS branding assets
+      - name: Verify NovaOS branding assets are in place
         run: |
-          mkdir -p "$GITHUB_WORKSPACE/config/includes.chroot/opt/"
-          cp -r "$GITHUB_WORKSPACE/novaos-config" "$GITHUB_WORKSPACE/config/includes.chroot/opt/novaos-config"
-          echo "✓ Branding assets staged → config/includes.chroot/opt/novaos-config"
-          ls -la "$GITHUB_WORKSPACE/config/includes.chroot/opt/"
+          # Branding files are already committed at the correct path:
+          # config/includes.chroot/opt/novaos-config/
+          # No copy needed — live-build reads them directly from there.
+          echo "=== Branding assets check ==="
+          ls -la "$GITHUB_WORKSPACE/config/includes.chroot/opt/novaos-config/" | head -20
+          echo "✓ Branding assets present at config/includes.chroot/opt/novaos-config/"
 
       # -----------------------------------------------------------------------
       # 6. Build the ISO
