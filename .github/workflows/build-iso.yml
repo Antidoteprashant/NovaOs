@@ -60,8 +60,11 @@ jobs:
           fi
 
           # Replace broken symlinks with real files in the bootloaders dir
-          sudo cp -f "$ISOLINUX_BIN" "$BOOTLOADERS_DIR/isolinux.bin"
-          sudo cp -f "$VESAMENU"     "$BOOTLOADERS_DIR/vesamenu.c32"
+          # Must rm -f first — cp refuses to write through a dangling symlink
+          sudo rm -f "$BOOTLOADERS_DIR/isolinux.bin"
+          sudo rm -f "$BOOTLOADERS_DIR/vesamenu.c32"
+          sudo cp "$ISOLINUX_BIN" "$BOOTLOADERS_DIR/isolinux.bin"
+          sudo cp "$VESAMENU"     "$BOOTLOADERS_DIR/vesamenu.c32"
 
           # Also copy all other .c32 modules live-build may need
           find /usr/lib/syslinux/modules/bios/ -name "*.c32" -type f 2>/dev/null | \
