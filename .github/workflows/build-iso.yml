@@ -26,7 +26,12 @@ jobs:
             live-build live-config live-boot \
             grub-common grub-efi-amd64-bin grub-pc-bin \
             fonts-dejavu-core fonts-dejavu-extra \
-            xorriso squashfs-tools
+            xorriso squashfs-tools librsvg2-bin
+
+          # live-build calls 'rsvg' to convert splash.svg but modern librsvg2-bin
+          # ships 'rsvg-convert'. Create symlink so lb_binary_syslinux finds it.
+          sudo ln -sf /usr/bin/rsvg-convert /usr/local/bin/rsvg
+          echo "rsvg → $(rsvg --version 2>&1 || true)"
 
       # -----------------------------------------------------------------------
       # 2. Fix dangling isolinux symlinks
@@ -121,8 +126,11 @@ jobs:
         run: |
           sudo lb build 2>&1 | tee build.log
           echo "=== Build exit code: $? ==="
-          echo "=== ISO search ==="
-          find "$GITHUB_WORKSPACE" -maxdepth 2 \( -name "*.iso" -o -name "*.img" \) 2>/dev/null || true
+          echo "=== .build stage status ==="
+          ls -la .build/ 2>/dev/null || echo "(no .build dir)"
+          echo "=== ISO search (wide) ==="
+          sudo find /home/runner /root "$GITHUB_WORKSPACE" -maxdepth 5 \
+            \( -name "*.iso" -o -name "live-image*" \) 2>/dev/null || true
           ls -lh "$GITHUB_WORKSPACE"/*.iso 2>/dev/null || echo "No .iso in workspace root"
 
       # -----------------------------------------------------------------------
