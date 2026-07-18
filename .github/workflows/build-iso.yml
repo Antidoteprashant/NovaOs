@@ -11,7 +11,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install live-build
-        run: sudo apt update && sudo apt install -y live-build live-config live-boot isolinux syslinux-utils
+        run: |
+          sudo apt update
+          # --reinstall ensures symlink targets are properly extracted, not just the dangling symlinks
+          sudo apt install -y --reinstall isolinux syslinux-common syslinux-utils live-build live-config live-boot
       - name: Patch live-build to skip broken Contents.gz auto-detection
         run: |
           sudo sed -i '/Contents-\${ARCH}\.gz/,+10 s/^/#SKIPPED# /' /usr/lib/live/build/lb_chroot_linux-image || true
@@ -22,22 +25,42 @@ jobs:
       - name: Force-stage isolinux files where live-build expects them
         run: |
           sudo mkdir -p /root/isolinux
-          ISOLINUX_BIN=$(find / -iname "isolinux.bin" 2>/dev/null | head -1)
-          VESAMENU=$(find / -iname "vesamenu.c32" 2>/dev/null | head -1)
-          echo "Found isolinux.bin at: $ISOLINUX_BIN"
-          echo "Found vesamenu.c32 at: $VESAMENU"
+
+          # Diagnose symlink state before searching
+          echo "=== Symlink diagnosis ==="
+          ls -la /usr/share/live/build/bootloaders/isolinux/ 2>/dev/null || echo "(bootloaders dir not found)"
+          ls -la /usr/lib/ISOLINUX/ 2>/dev/null || echo "(ISOLINUX lib dir not found)"
+
+          # IMPORTANT: Use -type f to find ONLY real regular files.
+          # Without -type f, find returns dangling symlinks too — they show as "Found"
+          # but cp fails because the symlink target doesn't exist on disk.
+          ISOLINUX_BIN=$(find / -iname "isolinux.bin" -type f 2>/dev/null | head -1)
+          VESAMENU=$(find / -iname "vesamenu.c32" -type f 2>/dev/null | head -1)
+
+          echo "Found isolinux.bin (real file) at: ${ISOLINUX_BIN:-NOT FOUND}"
+          echo "Found vesamenu.c32 (real file) at: ${VESAMENU:-NOT FOUND}"
+
           if [ -n "$ISOLINUX_BIN" ]; then
             sudo cp "$ISOLINUX_BIN" /root/isolinux/isolinux.bin
+            echo "✓ isolinux.bin staged"
           else
-            echo "ERROR: isolinux.bin not found anywhere on this system"
+            echo "ERROR: No real isolinux.bin found (only broken symlinks, if any)."
+            echo "All isolinux.bin entries (including symlinks):"
+            find / -iname "isolinux.bin" 2>/dev/null || true
             exit 1
           fi
+
           if [ -n "$VESAMENU" ]; then
             sudo cp "$VESAMENU" /root/isolinux/vesamenu.c32
+            echo "✓ vesamenu.c32 staged"
           else
-            echo "ERROR: vesamenu.c32 not found anywhere on this system"
+            echo "ERROR: No real vesamenu.c32 found (only broken symlinks, if any)."
+            echo "All vesamenu.c32 entries (including symlinks):"
+            find / -iname "vesamenu.c32" 2>/dev/null || true
             exit 1
           fi
+
+          echo "=== Staged files ==="
           ls -la /root/isolinux/
       - name: Build ISO
         run: sudo bash scripts/build.sh
