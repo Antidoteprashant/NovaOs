@@ -1,0 +1,19 @@
+# config/package-lists/live.list.chroot
+# Owned by: Person 1 (Base System & Build Engineer)
+#
+# Packages required for the live session to function correctly.
+# These ensure the ISO boots as a live system (not just an installer).
+#
+# Rules:
+#   - One package name per line
+#   - Blank lines and lines starting with '#' are allowed
+#   - NO inline comments — live-build passes the full line to apt-get
+
+# --- Live session core ---
+live-boot
+live-config
+live-config-systemd
+
+# --- Init system ---
+systemd
+systemd-sysv

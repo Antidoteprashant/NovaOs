@@ -1,0 +1,30 @@
+# config/package-lists/devtools.list.chroot
+# Owned by: Person 1 (Base System & Build Engineer)
+#
+# Core developer tools baked into every NovaOS image.
+# Mapped to PRD Section 4 MVP scope: "Core dev tools (Python, Java, Git, gcc)"
+#
+# Rules:
+#   - One package name per line
+#   - Blank lines and lines starting with '#' are allowed
+#   - NO inline comments — live-build passes the full line to apt-get
+
+# --- Python stack ---
+python3
+python3-pip
+python3-venv
+
+# --- Java (OpenJDK — default-jdk picks correct version for bookworm) ---
+default-jdk
+
+# --- Version control ---
+git
+
+# --- C/C++ compiler toolchain ---
+gcc
+g++
+make
+
+# --- Network / download utilities ---
+curl
+wget
