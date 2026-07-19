@@ -112,13 +112,11 @@ install)
 
     # 12. Welcome app
     # NOTE (fixed): the launcher script (novaos-welcome) execs
-    # /usr/share/novaos/welcome/welcome.py — that file was never being
-    # copied here before, so the app would crash at runtime with
-    # "file not found". Now copying welcome.py alongside the launcher.
-    cp "$NOVAOS_ROOT/welcome-app/welcome.py" "$ASSETS_DIR/welcome/"
+    # the html file via xdg-open.
+    cp "$NOVAOS_ROOT/welcome-app/welcome.html" "$ASSETS_DIR/welcome/"
     cp "$NOVAOS_ROOT/welcome-app/novaos-welcome" "$ASSETS_DIR/welcome/"
     chmod 755 "$ASSETS_DIR/welcome/novaos-welcome"
-    chmod 644 "$ASSETS_DIR/welcome/welcome.py"
+    chmod 644 "$ASSETS_DIR/welcome/welcome.html"
 
     log "Done."
     log "Next: configure Calamares settings.conf to call novaos-branding-postinstall.sh"

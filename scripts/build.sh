@@ -18,6 +18,7 @@
 #       xorriso squashfs-tools
 
 set -e
+set -o pipefail
 
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 

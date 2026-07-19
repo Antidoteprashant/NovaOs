@@ -28,10 +28,9 @@ jobs:
             fonts-dejavu-core fonts-dejavu-extra \
             xorriso squashfs-tools librsvg2-bin
 
-          # live-build calls 'rsvg' to convert splash.svg but modern librsvg2-bin
-          # ships 'rsvg-convert'. Create symlink so lb_binary_syslinux finds it.
-          sudo ln -sf /usr/bin/rsvg-convert /usr/local/bin/rsvg
-          echo "rsvg → $(rsvg --version 2>&1 || true)"
+          # Patch live-build's lb_binary_syslinux which calls bare 'rsvg'
+          # instead of 'rsvg-convert'
+          sudo sed -i 's/rsvg /rsvg-convert /g' /usr/lib/live/build/lb_binary_syslinux || true
 
       # -----------------------------------------------------------------------
       # 2. Fix dangling isolinux symlinks
@@ -124,7 +123,7 @@ jobs:
       # -----------------------------------------------------------------------
       - name: Build ISO
         run: |
-          sudo lb build 2>&1 | tee build.log
+          sudo bash -c 'set -o pipefail; lb build 2>&1 | tee build.log'
           echo "=== Build exit code: $? ==="
           echo "=== .build stage status ==="
           ls -la .build/ 2>/dev/null || echo "(no .build dir)"
