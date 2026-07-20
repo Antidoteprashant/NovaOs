@@ -34,6 +34,10 @@ jobs:
           sudo sed -i 's|rsvg --format|rsvg-convert --format|g' /usr/lib/live/build/lb_binary_syslinux || true
           sudo sed -i 's|splash\.svg splash\.png|splash.svg -o splash.png|g' /usr/lib/live/build/lb_binary_syslinux || true
           sudo sed -i 's|splash\.svg" "${_TARGET}/splash\.png|splash.svg" -o "${_TARGET}/splash.png|g' /usr/lib/live/build/lb_binary_syslinux || true
+
+          # Ubuntu's live-build has a hardcoded hack for gfxboot 'bootlogo' that crashes
+          # when building Debian ISOs. We patch it out here.
+          sudo sed -i '/Hack around the removal of support in gfxboot/,/rm -rf "\$tmpdir"/ s/^/#/' /usr/lib/live/build/lb_binary_syslinux || true
       # -----------------------------------------------------------------------
       # 2. Fix dangling isolinux symlinks
       #    live-build's bootloaders dir has broken symlinks on Ubuntu runners.
