@@ -28,6 +28,9 @@ jobs:
             fonts-dejavu-core fonts-dejavu-extra \
             xorriso squashfs-tools librsvg2-bin
 
+          # Ensure isohybrid is available on the runner (it may have been split or dropped from syslinux-utils)
+          which isohybrid || sudo apt install -y syslinux
+          
           # Patch live-build's lb_binary_syslinux for proper rsvg-convert usage
           # The old 'rsvg' command used different syntax (input output) vs 'rsvg-convert' (input -o output)
           sudo sed -i 's|/usr/bin/rsvg|/usr/bin/rsvg-convert|g' /usr/lib/live/build/lb_binary_syslinux || true
