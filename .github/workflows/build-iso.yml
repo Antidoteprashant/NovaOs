@@ -28,10 +28,12 @@ jobs:
             fonts-dejavu-core fonts-dejavu-extra \
             xorriso squashfs-tools librsvg2-bin
 
-          # Patch live-build's lb_binary_syslinux which calls bare 'rsvg'
-          # instead of 'rsvg-convert'
-          sudo sed -i 's/rsvg /rsvg-convert /g' /usr/lib/live/build/lb_binary_syslinux || true
-
+          # Patch live-build's lb_binary_syslinux for proper rsvg-convert usage
+          # The old 'rsvg' command used different syntax (input output) vs 'rsvg-convert' (input -o output)
+          sudo sed -i 's|/usr/bin/rsvg|/usr/bin/rsvg-convert|g' /usr/lib/live/build/lb_binary_syslinux || true
+          sudo sed -i 's|rsvg --format|rsvg-convert --format|g' /usr/lib/live/build/lb_binary_syslinux || true
+          sudo sed -i 's|splash\.svg splash\.png|splash.svg -o splash.png|g' /usr/lib/live/build/lb_binary_syslinux || true
+          sudo sed -i 's|splash\.svg" "${_TARGET}/splash\.png|splash.svg" -o "${_TARGET}/splash.png|g' /usr/lib/live/build/lb_binary_syslinux || true
       # -----------------------------------------------------------------------
       # 2. Fix dangling isolinux symlinks
       #    live-build's bootloaders dir has broken symlinks on Ubuntu runners.
