@@ -4,6 +4,8 @@
 # line to apt-get, so "pkg # comment" would break the install pass.
 
 # --- Desktop Environment (LXQt) ---
+xorg
+xserver-xorg
 lxqt
 lxqt-session
 lxqt-panel

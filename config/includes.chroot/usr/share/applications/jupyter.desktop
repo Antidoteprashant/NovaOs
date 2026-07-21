@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Jupyter Notebook
+GenericName=Notebook
+Comment=Web-based notebook environment for interactive computing
+Exec=jupyter-notebook %f
+Icon=notebook
+Terminal=true
+Type=Application
+Categories=Student Tools;Education;
+Keywords=python;data;science;

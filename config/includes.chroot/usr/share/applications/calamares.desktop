@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Install NovaOS
+GenericName=Live Installer
+Comment=Install the operating system to disk
+Exec=sudo -E calamares
+Icon=calamares
+Terminal=false
+Categories=System;
+StartupNotify=true
