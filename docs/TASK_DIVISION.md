@@ -61,20 +61,22 @@ qemu-system-x86_64 -m 4096 -cdrom live-image-amd64.hybrid.iso -boot d
 free -h
 ```
 
-Log RAM numbers in the shared bug/task sheet \u2014 this is your success-metric evidence for the demo.
+Log RAM numbers in the shared bug/task sheet — this is your success-metric evidence for the demo.
 
 ---
 
-## Person 2 \u2014 Desktop Experience & Installer
+## Person 2 — Desktop Experience & Installer
 
 **Owns:** everything the user sees during install and first login.
 
-### Week 1 \u2014 Research (no build access needed yet)
+### Known Issues
+- **LXQt Session Autostart:** After graphical boot and selecting Openbox, the screen goes solid black because `lxqt-panel` and `pcmanfm-qt` (desktop) are missing from the `modules` list in `config/includes.chroot/opt/novaos-config/de-config/lxqt/session.conf`. Needs to be fixed.
+
+### Week 1 — Research (no build access needed yet)
 
 ```bash
 sudo apt install -y lxqt
 ```
-Explore config at `~/.config/lxqt/` (per-user) and `/etc/xdg/lxqt/` (system-wide default \u2014 this is what NovaOS needs).
 
 ### Weeks 2\u20133 \u2014 Branding + Calamares
 
