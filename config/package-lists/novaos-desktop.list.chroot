@@ -30,7 +30,8 @@ adwaita-icon-theme
 # --- Display / Login ---
 accountsservice
 gnome-keyring
-policykit-1
+polkitd
+pkexec
 lightdm-gtk-greeter-settings
 
 # --- Plymouth (boot splash) ---
