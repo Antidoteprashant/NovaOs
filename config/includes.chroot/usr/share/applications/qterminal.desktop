@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=QTerminal
+GenericName=Terminal emulator
+Comment=A lightweight Qt-based terminal emulator
+Exec=qterminal
+Icon=utilities-terminal
+Type=Application
+Categories=System;TerminalEmulator;

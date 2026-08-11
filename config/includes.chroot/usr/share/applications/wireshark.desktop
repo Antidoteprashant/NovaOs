@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Wireshark
+GenericName=Network Analyzer
+Comment=Network traffic analyzer
+Exec=wireshark %f
+Icon=wireshark
+Terminal=false
+Type=Application
+Categories=Student Tools;Network;
+MimeType=application/vnd.tcpdump.pcap;application/x-pcapng;application/x-snoop;application/x-iptrace;application/x-lanalyzer;application/x-netmon;application/x-radcom;application/x-etherpeek;application/x-visualnetworks;application/x-netxray;application/x-modcap;
+Keywords=network;analyzer;pcap;

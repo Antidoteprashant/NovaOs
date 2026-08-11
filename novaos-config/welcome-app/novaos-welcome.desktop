@@ -6,6 +6,6 @@ Comment=Open the NovaOS welcome screen
 Exec=/usr/bin/novaos-welcome
 Icon=/usr/share/novaos/icons/novaos-logo.svg
 Terminal=false
-Categories=NovaOS;System;Education;
+Categories=NovaOS;System;
 Keywords=welcome;tour;help;intro;
 StartupNotify=true

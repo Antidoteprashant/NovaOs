@@ -1,11 +1,2 @@
 #!/bin/bash
-# ----------------------------------------------------------------------
-# NovaOS Welcome launcher
-# Installed by install-branding.sh to /usr/bin/novaos-welcome
-# ----------------------------------------------------------------------
-# Runs the welcome app. The .py file lives at:
-#   /usr/share/novaos/welcome/welcome.py
-# ----------------------------------------------------------------------
-
-set -e
-exec python3 /usr/share/novaos/welcome/welcome.py "$@"
+xdg-open /usr/share/novaos/welcome/welcome.html

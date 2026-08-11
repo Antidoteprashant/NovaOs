@@ -14,6 +14,14 @@ live-boot
 live-config
 live-config-systemd
 
+# --- Build tools required inside chroot by live-build ---
+syslinux-utils
+xorriso
+mtools
+dosfstools
+grub-efi-amd64-bin
+grub-pc-bin
+
 # --- Init system ---
 systemd
 systemd-sysv

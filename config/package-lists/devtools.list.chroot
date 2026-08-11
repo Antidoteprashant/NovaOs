@@ -28,3 +28,6 @@ make
 # --- Network / download utilities ---
 curl
 wget
+
+# --- Remote access ---
+openssh-server
