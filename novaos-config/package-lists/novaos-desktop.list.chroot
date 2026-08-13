@@ -10,7 +10,7 @@ lxqt
 lxqt-session
 lxqt-panel
 lxqt-config
-lxqt-globalkeyshcuts
+lxqt-globalkeys
 lxqt-qtplugin
 lxqt-sudo
 lxqt-themes
@@ -19,7 +19,6 @@ lxqt-powermanagement
 lxqt-notificationd
 pcmanfm-qt
 qterminal
-qtermwidget
 obconf-qt
 openbox
 lightdm
@@ -28,7 +27,6 @@ lightdm-gtk-greeter
 # --- Theming / Fonts ---
 qt5ct
 adwaita-qt
-adwaita-qt5
 fonts-noto-core
 fonts-noto-cjk
 fonts-dejavu-core
