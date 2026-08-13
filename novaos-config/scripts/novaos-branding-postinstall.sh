@@ -181,15 +181,16 @@ X-GNOME-Autostart-enabled=true
 # FILE (a launcher script) — the check always failed silently and the
 # welcome app was never installed. Changed to `-f`.
 if [ -f "$NOVAOS_ASSETS/welcome/novaos-welcome" ]; then
-    # Install both the launcher AND the Python app it execs
-    # (the launcher alone is useless without welcome.py next to it)
+    # NOTE (fixed): welcome app moved from a PyQt5 script (welcome.py) to a
+    # static HTML file (welcome.html) opened via xdg-open. This section
+    # still looked for welcome.py — updated to copy welcome.html instead.
     mkdir -p "$TARGET/usr/bin" "$TARGET/usr/share/novaos/welcome"
     cp "$NOVAOS_ASSETS/welcome/novaos-welcome" "$TARGET/usr/bin/novaos-welcome"
     chmod 755 "$TARGET/usr/bin/novaos-welcome"
-    if [ -f "$NOVAOS_ASSETS/welcome/welcome.py" ]; then
-        cp "$NOVAOS_ASSETS/welcome/welcome.py" "$TARGET/usr/share/novaos/welcome/welcome.py"
+    if [ -f "$NOVAOS_ASSETS/welcome/welcome.html" ]; then
+        cp "$NOVAOS_ASSETS/welcome/welcome.html" "$TARGET/usr/share/novaos/welcome/welcome.html"
     else
-        log "  ⚠ welcome.py not found — launcher will fail at runtime"
+        log "  ⚠ welcome.html not found — launcher will fail at runtime"
     fi
     log "  ✓ Welcome app installed"
 

@@ -10,13 +10,16 @@ lxqt
 lxqt-session
 lxqt-panel
 lxqt-config
+lxqt-globalkeyshcuts
 lxqt-qtplugin
 lxqt-sudo
 lxqt-themes
 lxqt-policykit
 lxqt-powermanagement
+lxqt-notificationd
 pcmanfm-qt
 qterminal
+qtermwidget
 obconf-qt
 openbox
 lightdm
@@ -24,8 +27,15 @@ lightdm-gtk-greeter
 
 # --- Theming / Fonts ---
 qt5ct
+adwaita-qt
+adwaita-qt5
 fonts-noto-core
+fonts-noto-cjk
 fonts-dejavu-core
+# fonts-inter: NovaOS font; auto-fallback if missing
+fonts-inter
+# fonts-jetbrains-mono: for code editor / welcome app
+fonts-jetbrains-mono
 papirus-icon-theme
 adwaita-icon-theme
 
@@ -49,3 +59,11 @@ calamares-settings-debian
 python3-pyqt5
 python3-pyqt5.qtsvg
 xdg-utils
+
+# --- Optional but recommended: lightweight office & docs ---
+# zeal: offline dev docs
+zeal
+# libreoffice-core: keep it small; full LO is ~400MB
+libreoffice-core
+libreoffice-writer
+libreoffice-calc
